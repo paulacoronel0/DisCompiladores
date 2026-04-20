@@ -85,32 +85,34 @@ public class AnalizadorLexico {
 
                 // reconocimiento de identificadores o palabras reservadas
                 if (Character.isLetter(this.caracterActual())) {
-                    StringBuilder var4 = new StringBuilder();
+                    StringBuilder acum_caracteres = new StringBuilder();
 
                     // construye el lexema
                     while (Character.isLetterOrDigit(this.caracterActual())) {
-                        var4.append(this.caracterActual());
+                        acum_caracteres.append(this.caracterActual());
                         this.avanzar();
                     }
 
-                    String var2 = var4.toString().toLowerCase();
+                    String lexema_final = acum_caracteres.toString().toLowerCase();
 
                     // si es palabra reservada la devuelve, sino identificador
-                    TipoToken var3 = (TipoToken) PALABRAS_RESERVADAS.getOrDefault(var2, TipoToken.IDENTIFICADOR);
+                    TipoToken tipo_token = (TipoToken) PALABRAS_RESERVADAS.getOrDefault(lexema_final, TipoToken.IDENTIFICADOR);
 
-                    return new Token(var3, var2, this.linea);
+                    //consulta hay que almacenar las variables/identificadores, que se usan varias veces
+
+                    return new Token(tipo_token, lexema_final, this.linea);
                 }
 
                 // reconocimiento de numeros
                 if (Character.isDigit(this.caracterActual())) {
-                    StringBuilder var1 = new StringBuilder();
+                    StringBuilder numero = new StringBuilder();
 
                     while (Character.isDigit(this.caracterActual())) {
-                        var1.append(this.caracterActual());
+                        numero.append(this.caracterActual());
                         this.avanzar();
                     }
 
-                    return new Token(TipoToken.NUMERO, var1.toString(), this.linea);
+                    return new Token(TipoToken.NUMERO, numero.toString(), this.linea);
                 }
 
                 // reconocimiento de simbolos y operadores
@@ -196,7 +198,8 @@ public class AnalizadorLexico {
 
                     // cualquier otro caracter es error
                     default:
-                        this.error("caracter invalido: " + this.caracterActual());
+                        String caracter_invalido = "caracter invalido" + this.caracterActual();
+                        this.error(caracter_invalido);
                 }
             }
         }

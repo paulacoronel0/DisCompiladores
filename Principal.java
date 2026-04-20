@@ -1,4 +1,8 @@
 import java.nio.file.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+
 
 public class Principal {
     public static void main(String[] args) {
@@ -15,7 +19,7 @@ public class Principal {
             Token token;
             do {
                 token = analizador.siguienteToken();
-                System.out.println(token);
+                System.out.println(token);//cambiarlo para que lo guarde en un archivo salida.txt
             } while (token.tipo != TipoToken.FIN_ARCHIVO);
 
         } catch (Exception e) {
