@@ -12,15 +12,18 @@ public class Principal {
             return;
         }
 
-        try {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("salida.txt"))){
             String entrada = new String(Files.readAllBytes(Paths.get(args[0])));
             AnalizadorLexico analizador = new AnalizadorLexico(entrada);
-
+            String salida = "salida.txt";
             Token token;
             do {
                 token = analizador.siguienteToken();
-                System.out.println(token);//cambiarlo para que lo guarde en un archivo salida.txt
-            } while (token.tipo != TipoToken.FIN_ARCHIVO);
+                writer.write(token.toString());
+                writer.newLine();
+            } while (!token.tipo.equals("FIN_ARCHIVO"));
+
+            
 
         } catch (Exception e) {
             System.err.println(e.getMessage());
