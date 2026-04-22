@@ -1,12 +1,18 @@
+
 public class Token {
-    public String tipo;
-    public String lexema;
-    public int linea;
+
+    private String tipo;
+    private String lexema;
+    private int linea;
 
     public Token(String tipo, String lexema, int linea) {
         this.tipo = tipo;
         this.lexema = lexema;
         this.linea = linea;
+    }
+
+    public String getTipo() {
+        return this.tipo;
     }
 
     @Override
