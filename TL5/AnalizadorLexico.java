@@ -19,7 +19,7 @@ public class AnalizadorLexico {
     private int linea = 1;
 
     // tabla con palabras reservadas del lenguaje
-    private static final Map<String, String> PALABRAS_RESERVADAS = new HashMap<String, String>();
+    private static final Map<String, TipoToken> PALABRAS_RESERVADAS = new HashMap<String, TipoToken>();
 
     // constructor que recibe el texto de entrada
     public AnalizadorLexico(String var1) {
@@ -95,7 +95,7 @@ public class AnalizadorLexico {
                     String lexema_final = acum_caracteres.toString().toLowerCase();
 
                     // si es palabra reservada la devuelve, sino identificador
-                    String tipo_token = PALABRAS_RESERVADAS.getOrDefault(lexema_final, "IDENTIFICADOR");
+                    TipoToken tipo_token = PALABRAS_RESERVADAS.getOrDefault(lexema_final, TipoToken.IDENTIFICADOR);
 
                     //consulta hay que almacenar las variables/identificadores, que se usan varias veces
                     return new Token(tipo_token, lexema_final, this.linea);
@@ -110,7 +110,7 @@ public class AnalizadorLexico {
                         this.avanzar();
                     }
 
-                    return new Token("NUMERO", numero.toString(), this.linea);
+                    return new Token(TipoToken.NUMERO, numero.toString(), this.linea);
                 }
 
                 // reconocimiento de simbolos y operadores
@@ -118,73 +118,73 @@ public class AnalizadorLexico {
 
                     case '(':
                         this.avanzar();
-                        return new Token("PARENTESIS_ABRE", "(", this.linea);
+                        return new Token(TipoToken.PARENTESIS_ABRE, "(", this.linea);
 
                     case ')':
                         this.avanzar();
-                        return new Token("PARENTESIS_CIERRA", ")", this.linea);
+                        return new Token(TipoToken.PARENTESIS_CIERRA, ")", this.linea);
 
                     case '*':
                         this.avanzar();
-                        return new Token("MULTIPLICACION", "*", this.linea);
+                        return new Token(TipoToken.MULTIPLICACION, "*", this.linea);
 
                     case '+':
                         this.avanzar();
-                        return new Token("MAS", "+", this.linea);
+                        return new Token(TipoToken.MAS, "+", this.linea);
 
                     case ',':
                         this.avanzar();
-                        return new Token("COMA", ",", this.linea);
+                        return new Token(TipoToken.COMA, ",", this.linea);
 
                     case '-':
                         this.avanzar();
-                        return new Token("MENOS", "-", this.linea);
+                        return new Token(TipoToken.MENOS, "-", this.linea);
 
                     case '.':
                         this.avanzar();
-                        return new Token("PUNTO", ".", this.linea);
+                        return new Token(TipoToken.PUNTO, ".", this.linea);
 
                     case '/':
                         this.avanzar();
-                        return new Token("DIVISION", "/", this.linea);
+                        return new Token(TipoToken.DIV, "/", this.linea);
 
                     // operador asignacion o dos puntos
                     case ':':
                         this.avanzar();
                         if (this.caracterActual() == '=') {
                             this.avanzar();
-                            return new Token("ASIGNACION", ":=", this.linea);
+                            return new Token(TipoToken.ASIGNACION, ":=", this.linea);
                         }
-                        return new Token("DOS_PUNTOS", ":", this.linea);
+                        return new Token(TipoToken.DOS_PUNTOS, ":", this.linea);
 
                     case ';':
                         this.avanzar();
-                        return new Token("PUNTO_Y_COMA", ";", this.linea);
+                        return new Token(TipoToken.PUNTO_Y_COMA, ";", this.linea);
 
                     // operadores relacionales
                     case '<':
                         this.avanzar();
                         if (this.caracterActual() == '=') {
                             this.avanzar();
-                            return new Token("MENOR_IGUAL", "<=", this.linea);
+                            return new Token(TipoToken.MENOR_IGUAL, "<=", this.linea);
                         }
                         if (this.caracterActual() == '>') {
                             this.avanzar();
-                            return new Token("DISTINTO", "<>", this.linea);
+                            return new Token(TipoToken.DISTINTO, "<>", this.linea);
                         }
-                        return new Token("MENOR", "<", this.linea);
+                        return new Token(TipoToken.MENOR, "<", this.linea);
 
                     case '=':
                         this.avanzar();
-                        return new Token("IGUAL", "=", this.linea);
+                        return new Token(TipoToken.IGUAL, "=", this.linea);
 
                     case '>':
                         this.avanzar();
                         if (this.caracterActual() == '=') {
                             this.avanzar();
-                            return new Token("MAYOR_IGUAL", ">=", this.linea);
+                            return new Token(TipoToken.MAYOR_IGUAL, ">=", this.linea);
                         }
-                        return new Token("MAYOR", ">", this.linea);
+                        return new Token(TipoToken.MAYOR, ">", this.linea);
                     // cualquier otro caracter es error
                     default:
                         String caracter_invalido = "caracter invalido " + this.caracterActual();
@@ -194,57 +194,30 @@ public class AnalizadorLexico {
         }
 
         // si termina el archivo devuelve token fin
-        return new Token("FIN_ARCHIVO", "", this.linea);
+        return new Token(TipoToken.FIN_ARCHIVO, "", this.linea);
     }
 
     // inicializacion de palabras reservadas
     static {
-        PALABRAS_RESERVADAS.put("program", "PROGRAM");
-        PALABRAS_RESERVADAS.put("var", "VAR");
-        PALABRAS_RESERVADAS.put("procedure", "PROCEDURE");
-        PALABRAS_RESERVADAS.put("function", "FUNCTION");
-        PALABRAS_RESERVADAS.put("begin", "BEGIN");
-        PALABRAS_RESERVADAS.put("end", "END");
-        PALABRAS_RESERVADAS.put("if", "IF");
-        PALABRAS_RESERVADAS.put("then", "THEN");
-        PALABRAS_RESERVADAS.put("else", "ELSE");
-        PALABRAS_RESERVADAS.put("while", "WHILE");
-        PALABRAS_RESERVADAS.put("do", "DO");
-        PALABRAS_RESERVADAS.put("write", "WRITE");
-        PALABRAS_RESERVADAS.put("read", "READ");
-        PALABRAS_RESERVADAS.put("integer", "INTEGER");
-        PALABRAS_RESERVADAS.put("boolean", "BOOLEAN");
-        PALABRAS_RESERVADAS.put("true", "TRUE");
-        PALABRAS_RESERVADAS.put("false", "FALSE");
-        PALABRAS_RESERVADAS.put("and", "AND");
-        PALABRAS_RESERVADAS.put("or", "OR");
-        PALABRAS_RESERVADAS.put("not", "NOT");
-        PALABRAS_RESERVADAS.put("div", "DIV");
-    }
-}
 
-//Main
-class Principal {
-
-    public static void main(String[] args) {
-
-        if (args.length != 1) {
-            System.out.println("Uso: java Principal archivo.pas");
-            return;
-        }
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("salida.txt"))) {
-            String entrada = new String(Files.readAllBytes(Paths.get(args[0])));
-            AnalizadorLexico analizador = new AnalizadorLexico(entrada);
-            Token token;
-            do {
-                token = analizador.siguienteToken();
-                writer.write(token.toString());
-                writer.newLine();
-            } while (!token.getTipo().equals("FIN_ARCHIVO"));
-
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
-        }
+        PALABRAS_RESERVADAS.put("program", TipoToken.PROGRAM);
+        PALABRAS_RESERVADAS.put("var", TipoToken.VAR);
+        PALABRAS_RESERVADAS.put("procedure", TipoToken.PROCEDURE);
+        PALABRAS_RESERVADAS.put("function", TipoToken.FUNCTION);
+        PALABRAS_RESERVADAS.put("begin", TipoToken.BEGIN);
+        PALABRAS_RESERVADAS.put("end", TipoToken.END);
+        PALABRAS_RESERVADAS.put("if", TipoToken.IF);
+        PALABRAS_RESERVADAS.put("then", TipoToken.THEN);
+        PALABRAS_RESERVADAS.put("else", TipoToken.ELSE);
+        PALABRAS_RESERVADAS.put("while", TipoToken.WHILE);
+        PALABRAS_RESERVADAS.put("do", TipoToken.DO);
+        PALABRAS_RESERVADAS.put("write", TipoToken.WRITE);
+        PALABRAS_RESERVADAS.put("read", TipoToken.READ);
+        PALABRAS_RESERVADAS.put("integer", TipoToken.INTEGER);
+        PALABRAS_RESERVADAS.put("boolean", TipoToken.BOOLEAN);
+        PALABRAS_RESERVADAS.put("and", TipoToken.AND);
+        PALABRAS_RESERVADAS.put("or", TipoToken.OR);
+        PALABRAS_RESERVADAS.put("not", TipoToken.NOT);
+        PALABRAS_RESERVADAS.put("div", TipoToken.DIV);
     }
 }

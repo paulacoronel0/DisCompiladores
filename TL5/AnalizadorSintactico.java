@@ -3,33 +3,18 @@ import java.util.List;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
-enum TipoToken {
-    PROGRAM, PROCEDURE, FUNCTION, IDENTIFICADOR, PUNTO_Y_COMA,
-    VAR, COMA, DOS_PUNTOS, INTEGER, BOOLEAN,
-    BEGIN, END, PUNTO,
-    ASIGNACION,
-    NUMERO,
-    MAS, MENOS, MULTIPLICACION,
-    DIV, AND, OR, NOT,
-    IF, THEN, ELSE,
-    WHILE, DO,
-    WRITE, READ,
-    PARENTESIS_ABRE, PARENTESIS_CIERRA,
-    IGUAL, DISTINTO, MENOR, MENOR_IGUAL,
-    MAYOR, MAYOR_IGUAL,
-    FIN_ARCHIVO
-}
 
 public class AnalizadorSintactico {
 
-    private List<Token> tokens;
-    private int indice = 0;
+    private AnalizadorLexico analizadorLexico;
     private Token preanalisis;
 
-    public AnalizadorSintactico(List<Token> tokens) {
-        this.tokens = tokens;
-        preanalisis = tokens.get(indice);
+    public AnalizadorSintactico(AnalizadorLexico analizadorLexico) {
+        this.analizadorLexico = analizadorLexico;
+        preanalisis = analizadorLexico.siguienteToken();
     }
 
     // =====================================================
@@ -45,11 +30,7 @@ public class AnalizadorSintactico {
     }
 
     private void avanzar() {
-        indice++;
-
-        if (indice < tokens.size()) {
-            preanalisis = tokens.get(indice);
-        }
+        preanalisis = analizadorLexico.siguienteToken();
     }
 
     private void error(String mensaje) {
@@ -314,72 +295,24 @@ public class AnalizadorSintactico {
         match(TipoToken.NUMERO);
     }
 
-    // =====================================================
-    // MAIN
-    // =====================================================
-
     public static void main(String[] args) {
 
-        List<Token> tokens = new ArrayList<>();
+        if (args.length != 1) {
 
-        try (BufferedReader br = new BufferedReader(new FileReader("analisis-lexico.txt"))) {
+            System.out.println("Uso: java AnalizadorSintactico archivo.pas");
 
-            String linea;
+            return;
+        }
 
-            while ((linea = br.readLine()) != null) {
+        try {
 
-                // Ignorar líneas vacías
-                if (linea.trim().isEmpty()) {
-                    continue;
-                }
+            String entrada = new String(Files.readAllBytes(Paths.get(args[0])));
 
-                /*
-                 * Ejemplo de línea:
-                 * Token{PROGRAM, 'program', linea=1}
-                 */
+            AnalizadorLexico lexico = new AnalizadorLexico(entrada);
 
-                linea = linea.replace("Token{", "");
-                linea = linea.replace("}", "");
+            AnalizadorSintactico sintactico = new AnalizadorSintactico(lexico);
 
-                // ============================
-                // Extraer tipo
-                // ============================
-
-                int primerComa = linea.indexOf(",");
-
-                String tipoTexto = linea.substring(0, primerComa).trim();
-
-                // ============================
-                // Extraer lexema
-                // ============================
-
-                int primeraComilla = linea.indexOf("'");
-                int segundaComilla = linea.indexOf("'", primeraComilla + 1);
-
-                String lexema = linea.substring(primeraComilla + 1, segundaComilla);
-
-                // ============================
-                // Extraer línea
-                // ============================
-
-                int indiceLinea = linea.indexOf("linea=");
-
-                String lineaTexto = linea.substring(indiceLinea + 6).trim();
-
-                int numeroLinea = Integer.parseInt(lineaTexto);
-
-                TipoToken tipo = TipoToken.valueOf(tipoTexto);
-
-                tokens.add(new Token(tipo, lexema, numeroLinea));
-            }
-
-            AnalizadorSintactico analizador = new AnalizadorSintactico(tokens);
-
-            analizador.programa();
-
-        } catch (IOException e) {
-
-            System.out.println("Error al leer el archivo: " + e.getMessage());
+            sintactico.programa();
 
         } catch (Exception e) {
 
