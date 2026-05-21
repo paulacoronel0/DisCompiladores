@@ -22,13 +22,9 @@ public class Token {
     public int getLinea() {
         return linea;
     }
+
     @Override
     public String toString() {
-
-        return "Token{" +
-                tipo +
-                ", '" + lexema + '\'' +
-                ", linea=" + linea +
-                '}';
+        return "Token{" + tipo + ", '" + lexema + '\'' + ", linea=" + linea + '}';
     }
 }
