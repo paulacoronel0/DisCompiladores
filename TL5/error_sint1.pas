@@ -1,9 +1,9 @@
 PROGRAM ejemplo;
 
 VAR
-x : INTEGER
+x : INTEGER;
 
 BEGIN
-x := 5;
+x := 5
 WRITE(x)
 END.
