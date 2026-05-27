@@ -1,8 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -50,7 +46,7 @@ public class AnalizadorSintactico {
     // procesar declaraciones y comandos
     private void bloque() {
         parteDeclaracionesVariablesOpcional(); // procesar variables
-        parteDeclaracionesSubrutinasOpcional();
+        parteDeclaracionesSubrutinasOpcional(); //procesar subrutinas
         comandoCompuesto();// procesar begin end
     }
 
@@ -60,7 +56,6 @@ public class AnalizadorSintactico {
         if (preanalisis.getTipo() == TipoToken.VAR) {
             match(TipoToken.VAR);// consume var
             declaracionVariables();// procesar declaración
-            // match(TipoToken.PUNTO_Y_COMA);// consumir ;
             declaracionesVariablesOpcional();// procesar más declaraciones
         }
     }
@@ -141,24 +136,24 @@ public class AnalizadorSintactico {
                 comandoCompuesto();
                 break;
             case WHILE:
-                comandoWhile();
+                comandoRepetitivo();
                 break;
             case IF:
-                comandoIf();
+                comandoCondicional();
                 break;
             default:
                 error("Comando inválido");
         }
     }
 
-    private void comandoWhile() {
+    private void comandoRepetitivo() {
         match(TipoToken.WHILE);
         expresion();
         match(TipoToken.DO);
         comando();
     }
 
-    private void comandoIf() {
+    private void comandoCondicional() {
         match(TipoToken.IF);
         expresion();
         match(TipoToken.THEN);
@@ -176,8 +171,7 @@ public class AnalizadorSintactico {
         if (preanalisis.getTipo() == TipoToken.ASIGNACION) {
             match(TipoToken.ASIGNACION);
             expresion();
-        }
-        // llamada a procedimiento
+        } // llamada a procedimiento
         else if (preanalisis.getTipo() == TipoToken.PARENTESIS_ABRE) {
             match(TipoToken.PARENTESIS_ABRE);
             expresion();
