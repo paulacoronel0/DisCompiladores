@@ -50,6 +50,7 @@ public class AnalizadorSintactico {
     // procesar declaraciones y comandos
     private void bloque() {
         parteDeclaracionesVariablesOpcional(); // procesar variables
+        parteDeclaracionesSubrutinasOpcional();
         comandoCompuesto();// procesar begin end
     }
 
@@ -59,7 +60,7 @@ public class AnalizadorSintactico {
         if (preanalisis.getTipo() == TipoToken.VAR) {
             match(TipoToken.VAR);// consume var
             declaracionVariables();// procesar declaración
-            match(TipoToken.PUNTO_Y_COMA);// consumir ;
+            // match(TipoToken.PUNTO_Y_COMA);// consumir ;
             declaracionesVariablesOpcional();// procesar más declaraciones
         }
     }
@@ -75,8 +76,13 @@ public class AnalizadorSintactico {
     private void declaracionesVariablesOpcional() {
         // mientras haya ;
         while (preanalisis.getTipo() == TipoToken.PUNTO_Y_COMA) {
-            declaracionVariables();// procesar declaración
-            match(TipoToken.PUNTO_Y_COMA);// consume ;
+            match(TipoToken.PUNTO_Y_COMA); // consumir ;
+            // si viene otra declaración
+            if (preanalisis.getTipo() == TipoToken.IDENTIFICADOR) {
+                declaracionVariables();// procesar declaración
+            } else {
+                break;
+            }
         }
     }
 
@@ -134,19 +140,52 @@ public class AnalizadorSintactico {
             case BEGIN:// procesar bloque interno
                 comandoCompuesto();
                 break;
-
+            case WHILE:
+                comandoWhile();
+                break;
+            case IF:
+                comandoIf();
+                break;
             default:
                 error("Comando inválido");
         }
     }
 
+    private void comandoWhile() {
+        match(TipoToken.WHILE);
+        expresion();
+        match(TipoToken.DO);
+        comando();
+    }
+
+    private void comandoIf() {
+        match(TipoToken.IF);
+        expresion();
+        match(TipoToken.THEN);
+        comando();
+        if (preanalisis.getTipo() == TipoToken.ELSE) {
+            match(TipoToken.ELSE);
+            comando();
+        }
+    }
+
     // procesar asignaciones
     private void comandoIdentificador() {
-        identificador();// consumir identificador
-        // si existe :=
+        identificador();
+        // asignación
         if (preanalisis.getTipo() == TipoToken.ASIGNACION) {
-            match(TipoToken.ASIGNACION);// consume :=
-            expresion();// procesa expresión
+            match(TipoToken.ASIGNACION);
+            expresion();
+        }
+        // llamada a procedimiento
+        else if (preanalisis.getTipo() == TipoToken.PARENTESIS_ABRE) {
+            match(TipoToken.PARENTESIS_ABRE);
+            expresion();
+            while (preanalisis.getTipo() == TipoToken.COMA) {
+                match(TipoToken.COMA);
+                expresion();
+            }
+            match(TipoToken.PARENTESIS_CIERRA);
         }
     }
 
@@ -168,26 +207,84 @@ public class AnalizadorSintactico {
 
     // procesae expresiones
     private void expresion() {
-        termino(); // procesar término
-        // mientras haya + o -
-        while (preanalisis.getTipo() == TipoToken.MAS || preanalisis.getTipo() == TipoToken.MENOS) {
-            // si aparece +
+
+        expresionSimple();
+
+        if (preanalisis.getTipo() == TipoToken.IGUAL
+                || preanalisis.getTipo() == TipoToken.DISTINTO
+                || preanalisis.getTipo() == TipoToken.MENOR
+                || preanalisis.getTipo() == TipoToken.MENOR_IGUAL
+                || preanalisis.getTipo() == TipoToken.MAYOR
+                || preanalisis.getTipo() == TipoToken.MAYOR_IGUAL) {
+
+            relacion();
+
+            expresionSimple();
+        }
+    }
+
+    private void expresionSimple() {
+        termino();
+        while (preanalisis.getTipo() == TipoToken.MAS || preanalisis.getTipo() == TipoToken.MENOS
+                || preanalisis.getTipo() == TipoToken.OR) {
             if (preanalisis.getTipo() == TipoToken.MAS) {
-                match(TipoToken.MAS);// consumir +
+                match(TipoToken.MAS);
+            } else if (preanalisis.getTipo() == TipoToken.MENOS) {
+                match(TipoToken.MENOS);
             } else {
-                match(TipoToken.MENOS);// consumir -
+                match(TipoToken.OR);
             }
-            termino();// procesar término
+            termino();
+        }
+    }
+
+    private void relacion() {
+
+        switch (preanalisis.getTipo()) {
+
+            case IGUAL:
+                match(TipoToken.IGUAL);
+                break;
+
+            case DISTINTO:
+                match(TipoToken.DISTINTO);
+                break;
+
+            case MENOR:
+                match(TipoToken.MENOR);
+                break;
+
+            case MENOR_IGUAL:
+                match(TipoToken.MENOR_IGUAL);
+                break;
+
+            case MAYOR:
+                match(TipoToken.MAYOR);
+                break;
+
+            case MAYOR_IGUAL:
+                match(TipoToken.MAYOR_IGUAL);
+                break;
+
+            default:
+                error("Operador relacional inválido");
         }
     }
 
     // procesar términos
     private void termino() {
         factor();// procesar factor
-        // mientras haya *
-        while (preanalisis.getTipo() == TipoToken.MULTIPLICACION) {
-            match(TipoToken.MULTIPLICACION);// consumir *
-            factor();// procesar factor
+        while (preanalisis.getTipo() == TipoToken.MULTIPLICACION
+                || preanalisis.getTipo() == TipoToken.DIV
+                || preanalisis.getTipo() == TipoToken.AND) {
+            if (preanalisis.getTipo() == TipoToken.MULTIPLICACION) {
+                match(TipoToken.MULTIPLICACION);
+            } else if (preanalisis.getTipo() == TipoToken.DIV) {
+                match(TipoToken.DIV);
+            } else {
+                match(TipoToken.AND);
+            }
+            factor();
         }
     }
 
@@ -205,6 +302,10 @@ public class AnalizadorSintactico {
                 expresion();// procesar expresión
                 match(TipoToken.PARENTESIS_CIERRA);// consumir )
                 break;
+            case NOT:
+                match(TipoToken.NOT);
+                factor();
+                break;
             default:
                 error("Factor inválido");
         }
@@ -218,6 +319,55 @@ public class AnalizadorSintactico {
     // procesar número
     private void numero() {
         match(TipoToken.NUMERO);
+    }
+
+    private void parteDeclaracionesSubrutinasOpcional() {
+        while (preanalisis.getTipo() == TipoToken.PROCEDURE || preanalisis.getTipo() == TipoToken.FUNCTION) {
+            if (preanalisis.getTipo() == TipoToken.PROCEDURE) {
+                declaracionProcedimiento();
+            } else {
+                declaracionFuncion();
+            }
+            match(TipoToken.PUNTO_Y_COMA);
+        }
+    }
+
+    private void declaracionProcedimiento() {
+        match(TipoToken.PROCEDURE);
+        identificador();
+        parametrosFormalesOpcional();
+        match(TipoToken.PUNTO_Y_COMA);
+        bloque();
+    }
+
+    private void declaracionFuncion() {
+        match(TipoToken.FUNCTION);
+        identificador();
+        parametrosFormalesOpcional();
+        match(TipoToken.DOS_PUNTOS);
+        tipo();
+        match(TipoToken.PUNTO_Y_COMA);
+        bloque();
+    }
+
+    private void parametrosFormalesOpcional() {
+        if (preanalisis.getTipo() == TipoToken.PARENTESIS_ABRE) {
+            parametrosFormales();
+        }
+    }
+
+    private void parametrosFormales() {
+        match(TipoToken.PARENTESIS_ABRE);
+        listaIdentificadores();
+        match(TipoToken.DOS_PUNTOS);
+        tipo();
+        while (preanalisis.getTipo() == TipoToken.PUNTO_Y_COMA) {
+            match(TipoToken.PUNTO_Y_COMA);
+            listaIdentificadores();
+            match(TipoToken.DOS_PUNTOS);
+            tipo();
+        }
+        match(TipoToken.PARENTESIS_CIERRA);
     }
 
     public static void main(String[] args) {
