@@ -287,6 +287,21 @@ public class AnalizadorSintactico {
         switch (preanalisis.getTipo()) {
             case IDENTIFICADOR:
                 identificador();// consumir identificador
+                // SI VIENE UN PARÉNTESIS, ES UNA LLAMADA A FUNCIÓN
+                if (preanalisis.getTipo() == TipoToken.PARENTESIS_ABRE) {
+                    match(TipoToken.PARENTESIS_ABRE);
+                    
+                    // si el siguiente token no es el de cierre, significa que hay parámetros
+                    if (preanalisis.getTipo() != TipoToken.PARENTESIS_CIERRA) {
+                        expresion();
+                        while (preanalisis.getTipo() == TipoToken.COMA) {
+                            match(TipoToken.COMA);
+                            expresion();
+                        }
+                    }
+                    
+                    match(TipoToken.PARENTESIS_CIERRA);
+                }
                 break;
             case NUMERO:// consumir número
                 numero();
@@ -352,14 +367,18 @@ public class AnalizadorSintactico {
 
     private void parametrosFormales() {
         match(TipoToken.PARENTESIS_ABRE);
-        listaIdentificadores();
-        match(TipoToken.DOS_PUNTOS);
-        tipo();
-        while (preanalisis.getTipo() == TipoToken.PUNTO_Y_COMA) {
-            match(TipoToken.PUNTO_Y_COMA);
+        // Verificamos si la lista de parámetros NO está vacía
+        if (preanalisis.getTipo() != TipoToken.PARENTESIS_CIERRA) {
             listaIdentificadores();
             match(TipoToken.DOS_PUNTOS);
             tipo();
+            
+            while (preanalisis.getTipo() == TipoToken.PUNTO_Y_COMA) {
+                match(TipoToken.PUNTO_Y_COMA);
+                listaIdentificadores();
+                match(TipoToken.DOS_PUNTOS);
+                tipo();
+            }
         }
         match(TipoToken.PARENTESIS_CIERRA);
     }

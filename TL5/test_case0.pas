@@ -23,6 +23,18 @@ begin
    a:= 3 div 5
 end ;
 
+function f2 (a:integer):integer;
+var f2 : integer ;
+begin
+  f2 := a + a
+end ;
+
+function f3 ():integer;
+var f3 : integer ;
+begin
+  f3 := 20
+end ;
+
 
 begin
   a := 5 > 3 and c-1;
@@ -31,7 +43,7 @@ begin
   isValid := true;
   p1(d,7);
 
-while (counter < limit) do
+  while (counter < limit) do
   begin
     if (counter div 2 = 0) then
       isEven := true
@@ -41,6 +53,7 @@ while (counter < limit) do
     write(counter);
     counter := counter + 1
   end;
-  
+  c := 1 + f2(1);
+  d := 1 + f3();
   write(result);
 end.
