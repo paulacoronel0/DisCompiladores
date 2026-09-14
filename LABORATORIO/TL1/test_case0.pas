@@ -1,4 +1,4 @@
-program  testCase1;
+program  test_case0;
 
 var
   a, b: integer;
