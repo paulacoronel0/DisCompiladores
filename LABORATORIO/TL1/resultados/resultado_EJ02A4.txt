@@ -1,0 +1,8 @@
+Programa sintacticamente correcto, pero con errores semanticos:
+  Error semantico en linea 13: El identificador 'algo' no fue declarado
+  Error semantico en linea 14: El identificador 'salida' no fue declarado
+--- Ámbito nivel 0 ---
+  Simbolo{a, VARIABLE, tipo=INTEGER, linea=3}
+  Simbolo{b, VARIABLE, tipo=INTEGER, linea=3}
+  SimboloSubprograma{nuevo, PROCEDIMIENTO, parametros=1, retorno=null, linea=5}
+  Simbolo{prueba, PROGRAMA, tipo=null, linea=1}

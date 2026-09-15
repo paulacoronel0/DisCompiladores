@@ -59,7 +59,7 @@ public class TablaSimbolos {
 
     // utilidad de depuración: vuelca solo los símbolos de este ámbito
     public void imprimir() {
-        System.out.println("--- Ámbito nivel " + nivel + " ---");
+        System.out.println("--- Ambito nivel " + nivel + " ---");
         for (Simbolo s : simbolos.values()) {
             System.out.println("  " + s);
         }

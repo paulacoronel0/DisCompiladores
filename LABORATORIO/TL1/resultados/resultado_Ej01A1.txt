@@ -1,0 +1,6 @@
+Programa sintacticamente correcto, pero con errores semanticos:
+  Error semantico en linea 3: El identificador 'prueba' ya habia sido declarado en este ambito
+--- Ámbito nivel 0 ---
+  Simbolo{a, VARIABLE, tipo=INTEGER, linea=3}
+  Simbolo{prueba, PROGRAMA, tipo=null, linea=1}
+  SimboloSubprograma{algo, PROCEDIMIENTO, parametros=1, retorno=null, linea=4}
