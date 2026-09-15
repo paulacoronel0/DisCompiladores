@@ -716,8 +716,8 @@ public class AnalizadorSintactico {
             AnalizadorSintactico sintactico = new AnalizadorSintactico(lexico);
             // iniciar análisis
             sintactico.programa();
-            // descomentar para inspeccionar el ámbito global al finalizar:
-            sintactico.getTablaGlobal().imprimir();
+            // sintactico.getTablaGlobal().imprimir();
+            sintactico.getTablaGlobal().imprimirRecursivo();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

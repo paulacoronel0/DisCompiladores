@@ -5,7 +5,7 @@ Programa sintacticamente correcto, pero con errores semanticos:
   Error semantico en linea 14: El operando derecho de 'OR' debe ser BOOLEAN y es INTEGER
   Error semantico en linea 18: El identificador 'true' no fue declarado
   Error semantico en linea 18: El operando derecho de 'MAS' debe ser INTEGER y es BOOLEAN
---- Ámbito nivel 0 ---
+--- Ambito 'global' (nivel 0) ---
   Simbolo{a, VARIABLE, tipo=INTEGER, linea=3}
   Simbolo{b, VARIABLE, tipo=INTEGER, linea=3}
   SimboloSubprograma{nuevo, PROCEDIMIENTO, parametros=2, retorno=null, linea=12}
@@ -13,3 +13,10 @@ Programa sintacticamente correcto, pero con errores semanticos:
   Simbolo{j, VARIABLE, tipo=BOOLEAN, linea=4}
   Simbolo{l, VARIABLE, tipo=BOOLEAN, linea=4}
   SimboloSubprograma{algo, FUNCION, parametros=2, retorno=BOOLEAN, linea=6}
+--- Ambito 'nuevo' (nivel 1) ---
+  Simbolo{b, PARAMETRO, tipo=INTEGER, linea=12}
+  Simbolo{c, PARAMETRO, tipo=INTEGER, linea=12}
+--- Ambito 'algo' (nivel 1) ---
+  Simbolo{b, VARIABLE, tipo=BOOLEAN, linea=7}
+  Simbolo{m, PARAMETRO, tipo=BOOLEAN, linea=6}
+  Simbolo{n, PARAMETRO, tipo=BOOLEAN, linea=6}

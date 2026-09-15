@@ -11,6 +11,7 @@ public class TablaSimbolos {
     private Map<String, Simbolo> simbolos;
     private TablaSimbolos padre; // null únicamente en la tabla global
     private int nivel;
+    private String nombreAmbito = "global"; // lo pisa SimboloSubprograma al crear su tablaLocal
 
     public TablaSimbolos(TablaSimbolos padre) {
         this.simbolos = new HashMap<>();
@@ -57,11 +58,30 @@ public class TablaSimbolos {
         return nivel;
     }
 
-    // utilidad de depuración: vuelca solo los símbolos de este ámbito
+    // lo llama SimboloSubprograma al construir su tablaLocal, para que la
+    // impresión diga de qué procedimiento/función es cada ámbito
+    public void setNombreAmbito(String nombreAmbito) {
+        this.nombreAmbito = nombreAmbito;
+    }
+
+    // vuelca SOLO los símbolos de este ámbito puntual
     public void imprimir() {
-        System.out.println("--- Ambito nivel " + nivel + " ---");
+        System.out.println("--- Ambito '" + nombreAmbito + "' (nivel " + nivel + ") ---");
         for (Simbolo s : simbolos.values()) {
             System.out.println("  " + s);
+        }
+    }
+
+    // vuelca este ámbito y, recursivamente, el ámbito local de cada
+    // procedimiento/función declarado en él (y los que ESOS a su vez
+    // contengan, si hay subprogramas anidados). Así se ve, al terminar el
+    // análisis, la foto completa del árbol de ámbitos construido.
+    public void imprimirRecursivo() {
+        imprimir();
+        for (Simbolo s : simbolos.values()) {
+            if (s instanceof SimboloSubprograma) {
+                ((SimboloSubprograma) s).getTablaLocal().imprimirRecursivo();
+            }
         }
     }
 }

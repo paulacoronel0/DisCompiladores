@@ -19,6 +19,7 @@ public class SimboloSubprograma extends Simbolo {
         this.tipoRetorno = tipoRetorno;
         this.parametros = new ArrayList<>();
         this.tablaLocal = new TablaSimbolos(tablaPadre);
+        this.tablaLocal.setNombreAmbito(nombre); // así imprimirRecursivo() muestra a quién pertenece
     }
 
     public void agregarParametro(Simbolo parametro) {
