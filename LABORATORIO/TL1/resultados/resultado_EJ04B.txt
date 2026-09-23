@@ -4,17 +4,17 @@ Programa sintacticamente correcto, pero con errores semanticos:
   Error semantico en linea 20: El operando izquierdo de 'MAS' debe ser INTEGER y es BOOLEAN
   Error semantico en linea 20: El argumento 1 de 'algo' debe ser BOOLEAN y se recibio INTEGER
 --- Ambito 'global' (nivel 0) ---
-  Simbolo{a, VARIABLE, tipo=INTEGER, linea=3}
-  Simbolo{b, VARIABLE, tipo=INTEGER, linea=3}
+  Simbolo{a, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=0}
+  Simbolo{b, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=1}
   SimboloSubprograma{nuevo, PROCEDIMIENTO, parametros=2, retorno=null, linea=13}
-  Simbolo{prueba, PROGRAMA, tipo=null, linea=1}
-  Simbolo{j, VARIABLE, tipo=BOOLEAN, linea=4}
-  Simbolo{l, VARIABLE, tipo=BOOLEAN, linea=4}
+  Simbolo{prueba, PROGRAMA, tipo=null, linea=1, desplazamiento=-1}
+  Simbolo{j, VARIABLE, tipo=BOOLEAN, linea=4, desplazamiento=2}
+  Simbolo{l, VARIABLE, tipo=BOOLEAN, linea=4, desplazamiento=3}
   SimboloSubprograma{algo, FUNCION, parametros=2, retorno=INTEGER, linea=6}
 --- Ambito 'nuevo' (nivel 1) ---
-  Simbolo{b, PARAMETRO, tipo=INTEGER, linea=13}
-  Simbolo{c, PARAMETRO, tipo=INTEGER, linea=13}
+  Simbolo{b, PARAMETRO, tipo=INTEGER, linea=13, desplazamiento=0}
+  Simbolo{c, PARAMETRO, tipo=INTEGER, linea=13, desplazamiento=1}
 --- Ambito 'algo' (nivel 1) ---
-  Simbolo{b, VARIABLE, tipo=BOOLEAN, linea=7}
-  Simbolo{m, PARAMETRO, tipo=BOOLEAN, linea=6}
-  Simbolo{n, PARAMETRO, tipo=BOOLEAN, linea=6}
+  Simbolo{b, VARIABLE, tipo=BOOLEAN, linea=7, desplazamiento=2}
+  Simbolo{m, PARAMETRO, tipo=BOOLEAN, linea=6, desplazamiento=0}
+  Simbolo{n, PARAMETRO, tipo=BOOLEAN, linea=6, desplazamiento=1}

@@ -12,6 +12,8 @@ public class TablaSimbolos {
     private TablaSimbolos padre; // null únicamente en la tabla global
     private int nivel;
     private String nombreAmbito = "global"; // lo pisa SimboloSubprograma al crear su tablaLocal
+    private int contadorDesplazamiento = 0; // posición relativa al marco de activación del subprograma que contiene este ámbito    
+
 
     public TablaSimbolos(TablaSimbolos padre) {
         this.simbolos = new HashMap<>();
@@ -25,6 +27,9 @@ public class TablaSimbolos {
     public boolean insertar(Simbolo simbolo) {
         if (simbolos.containsKey(simbolo.getNombre())) {
             return false;
+        }
+        if (simbolo.getCategoria() == CategoriaSimbolo.VARIABLE || simbolo.getCategoria() == CategoriaSimbolo.PARAMETRO) {
+            simbolo.setDesplazamiento(contadorDesplazamiento++);
         }
         simbolos.put(simbolo.getNombre(), simbolo);
         return true;
