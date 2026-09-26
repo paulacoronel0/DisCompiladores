@@ -1,0 +1,16 @@
+Programa sintacticamente correcto, pero con errores semanticos:
+  Error semantico en linea 8: No se le puede asignar un valor a 'algo'
+  Error semantico en linea 17: 'algo' espera 0 argumento(s) y se recibieron 1
+  Error semantico en linea 18: 'nuevo' espera 3 argumento(s) y se recibieron 1
+--- Ambito 'global' (nivel 0) ---
+  Simbolo{a, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=0}
+  Simbolo{b, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=1}
+  SimboloSubprograma{nuevo, PROCEDIMIENTO, parametros=3, retorno=null, linea=11}
+  Simbolo{prueba, PROGRAMA, tipo=null, linea=1, desplazamiento=-1}
+  SimboloSubprograma{algo, FUNCION, parametros=0, retorno=INTEGER, linea=5}
+--- Ambito 'nuevo' (nivel 1) ---
+  Simbolo{a, PARAMETRO, tipo=INTEGER, linea=11, desplazamiento=0}
+  Simbolo{b, PARAMETRO, tipo=INTEGER, linea=11, desplazamiento=1}
+  Simbolo{c, PARAMETRO, tipo=INTEGER, linea=11, desplazamiento=2}
+--- Ambito 'algo' (nivel 1) ---
+  Simbolo{b, VARIABLE, tipo=BOOLEAN, linea=6, desplazamiento=0}

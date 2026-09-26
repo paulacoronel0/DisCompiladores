@@ -1,6 +1,5 @@
 Programa sintacticamente correcto, pero con errores semanticos:
-  Error semantico en linea 9: No se le puede asignar un valor a 'algo'
-  Error semantico en linea 18: El identificador 'true' no fue declarado
+  Error semantico en linea 9: Tipos incompatibles en la asignacion a 'algo' (se esperaba INTEGER y se recibio BOOLEAN)
 --- Ambito 'global' (nivel 0) ---
   Simbolo{a, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=0}
   Simbolo{b, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=1}

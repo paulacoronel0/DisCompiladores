@@ -42,7 +42,7 @@ for archivo in "${ARCHIVOS[@]}"; do
     echo "Archivo: $archivo"
     echo "=============================================="
 
-    SALIDA=$(java AnalizadorSintactico "$archivo" 2>&1)
+    SALIDA=$(java AnalizadorSem "$archivo" 2>&1)
     echo "$SALIDA"
     echo
 

@@ -1,7 +1,4 @@
 Programa sintacticamente correcto, pero con errores semanticos:
-  Error semantico en linea 9: No se le puede asignar un valor a 'algo'
-  Error semantico en linea 18: El identificador 'true' no fue declarado
-  Error semantico en linea 18: El identificador 'true' no fue declarado
   Error semantico en linea 18: 'algo' espera 2 argumento(s) y se recibieron 3
   Error semantico en linea 19: 'nuevo' espera 3 argumento(s) y se recibieron 1
 --- Ambito 'global' (nivel 0) ---

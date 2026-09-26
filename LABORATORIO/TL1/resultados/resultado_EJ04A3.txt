@@ -1,8 +1,6 @@
 Programa sintacticamente correcto, pero con errores semanticos:
   Error semantico en linea 9: El operando izquierdo de 'AND' debe ser BOOLEAN y es INTEGER
   Error semantico en linea 9: El operando derecho de 'MAS' debe ser INTEGER y es BOOLEAN
-  Error semantico en linea 9: No se le puede asignar un valor a 'algo'
-  Error semantico en linea 18: El identificador 'true' no fue declarado
 --- Ambito 'global' (nivel 0) ---
   Simbolo{a, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=0}
   Simbolo{b, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=1}

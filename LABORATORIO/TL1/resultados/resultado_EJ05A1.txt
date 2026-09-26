@@ -1,5 +1,4 @@
-Programa sintacticamente correcto, pero con errores semanticos:
-  Error semantico en linea 18: El identificador 'true' no fue declarado
+Programa sintactica y semanticamente correcto.
 --- Ambito 'global' (nivel 0) ---
   Simbolo{a, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=0}
   Simbolo{b, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=1}

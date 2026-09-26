@@ -1,3 +1,4 @@
+
 public enum TipoToken {
     PROGRAM, PROCEDURE, FUNCTION, IDENTIFICADOR, PUNTO_Y_COMA,
     VAR, COMA, DOS_PUNTOS, INTEGER, BOOLEAN,
@@ -6,6 +7,7 @@ public enum TipoToken {
     NUMERO,
     MAS, MENOS, MULTIPLICACION,
     DIV, AND, OR, NOT,
+    TRUE, FALSE,
     IF, THEN, ELSE,
     WHILE, DO,
     WRITE, READ,

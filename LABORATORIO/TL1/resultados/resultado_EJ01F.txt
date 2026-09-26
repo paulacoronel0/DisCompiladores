@@ -1,5 +1,4 @@
 Programa sintacticamente correcto, pero con errores semanticos:
-  Error semantico en linea 8: No se le puede asignar un valor a 'algo'
   Error semantico en linea 12: El identificador 'a' ya habia sido declarado en este ambito
   Error semantico en linea 20: 'algo' no es un procedimiento
 --- Ambito 'global' (nivel 0) ---

@@ -2,7 +2,6 @@ Programa sintacticamente correcto, pero con errores semanticos:
   Error semantico en linea 10: El operando izquierdo de 'MULTIPLICACION' debe ser INTEGER y es BOOLEAN
   Error semantico en linea 10: El operando derecho de 'MULTIPLICACION' debe ser INTEGER y es BOOLEAN
   Error semantico en linea 10: Tipos incompatibles en la asignacion a 'b' (se esperaba BOOLEAN y se recibio INTEGER)
-  Error semantico en linea 11: No se le puede asignar un valor a 'algo'
 --- Ambito 'global' (nivel 0) ---
   Simbolo{a, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=0}
   Simbolo{b, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=1}

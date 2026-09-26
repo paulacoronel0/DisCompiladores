@@ -1,3 +1,4 @@
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ public class AnalizadorSintactico {
         match(TipoToken.PUNTO_Y_COMA); // espera ;
         bloque(); // procesa bloque
         match(TipoToken.PUNTO); // espera .
-
+        match(TipoToken.FIN_ARCHIVO); //después del END no debe haber nada
         if (erroresSemanticos.isEmpty()) {
             System.out.println("Programa sintactica y semanticamente correcto.");
         } else {
@@ -285,15 +286,28 @@ public class AnalizadorSintactico {
     // valida que 'simbolo' pueda recibir una asignación y que el tipo de la
     // expresión coincida con el tipo declarado
     private void validarAsignacion(Simbolo simbolo, Token idTok, TipoDato tipoExpresion) {
+
         if (simbolo == null) {
             return; // ya se informó "no declarado"
         }
-        if (simbolo.getCategoria() != CategoriaSimbolo.VARIABLE
-                && simbolo.getCategoria() != CategoriaSimbolo.PARAMETRO) {
+        // según la categoria, se determina el tipo destino
+        TipoDato tipoDestino;
+        CategoriaSimbolo categoria = simbolo.getCategoria();
+        if (categoria == CategoriaSimbolo.VARIABLE || categoria == CategoriaSimbolo.PARAMETRO) {
+            tipoDestino = simbolo.getTipo();
+        } else if (categoria == CategoriaSimbolo.FUNCION
+                && ambitoActual == ((SimboloSubprograma) simbolo).getTablaLocal()) {
+            // busca en el ambito atual para determinar que el tipo destino es de retorno
+            tipoDestino = ((SimboloSubprograma) simbolo).getTipoRetorno();
+        } else {
             errorSemantico("No se le puede asignar un valor a '" + idTok.getLexema() + "'", idTok.getLinea());
-        } else if (tipoExpresion != null && simbolo.getTipo() != tipoExpresion) {
+            return;
+        }
+
+        // mismo chequeo que antes, pero comparando contra tipoDestino
+        if (tipoExpresion != null && tipoDestino != tipoExpresion) {
             errorSemantico("Tipos incompatibles en la asignacion a '" + idTok.getLexema()
-                    + "' (se esperaba " + simbolo.getTipo() + " y se recibio " + tipoExpresion + ")",
+                    + "' (se esperaba " + tipoDestino + " y se recibio " + tipoExpresion + ")",
                     idTok.getLinea());
         }
     }
@@ -363,10 +377,17 @@ public class AnalizadorSintactico {
 
         if (esOperadorRelacional(preanalisis.getTipo())) {
             int lineaOperador = preanalisis.getLinea();
+            TipoToken operadorRel = preanalisis.getTipo();   // se guarda el operador relacional
             relacion();
             TipoDato tipoDerecho = expresionSimple();
 
-            if (tipoIzquierdo != null && tipoDerecho != null && tipoIzquierdo != tipoDerecho) {
+            // < <= > >= solo tienen sentido entre enteros (evitamos que se use con booleans)
+            boolean esDeOrden = operadorRel == TipoToken.MENOR || operadorRel == TipoToken.MENOR_IGUAL
+                    || operadorRel == TipoToken.MAYOR || operadorRel == TipoToken.MAYOR_IGUAL;
+            if (esDeOrden && (tipoIzquierdo == TipoDato.BOOLEAN || tipoDerecho == TipoDato.BOOLEAN)) {
+                errorSemantico("El operador '" + operadorRel + "' solo admite operandos INTEGER", lineaOperador);
+            } else if (tipoIzquierdo != null && tipoDerecho != null && tipoIzquierdo != tipoDerecho) {
+
                 errorSemantico("Operandos de tipos incompatibles en la comparacion ("
                         + tipoIzquierdo + " y " + tipoDerecho + ")", lineaOperador);
             }
@@ -520,6 +541,11 @@ public class AnalizadorSintactico {
                                 || simbolo.getCategoria() == CategoriaSimbolo.PROGRAMA) {
                             errorSemantico("'" + idTok.getLexema() + "' no puede usarse como valor",
                                     idTok.getLinea());
+                        } else if (simbolo.getCategoria() == CategoriaSimbolo.FUNCION) {
+                            SimboloSubprograma funcion = (SimboloSubprograma) simbolo;
+                            List<TipoDato> argumentos = new ArrayList();
+                            chequearArgumentos(funcion, argumentos, idTok.getLinea());
+                            resultado = funcion.getTipoRetorno();
                         } else {
                             resultado = simbolo.getTipo();
                         }
@@ -529,6 +555,14 @@ public class AnalizadorSintactico {
             case NUMERO: // consumir número
                 numero();
                 resultado = TipoDato.INTEGER;
+                break;
+            case TRUE:   // literal booleano
+                match(TipoToken.TRUE);
+                resultado = TipoDato.BOOLEAN;
+                break;
+            case FALSE:
+                match(TipoToken.FALSE);
+                resultado = TipoDato.BOOLEAN;
                 break;
             case PARENTESIS_ABRE: // consumir (
                 match(TipoToken.PARENTESIS_ABRE);
@@ -637,7 +671,9 @@ public class AnalizadorSintactico {
                 } else {
                     Simbolo parametro = new Simbolo(idTok.getLexema(), CategoriaSimbolo.PARAMETRO,
                             grupo.tipo, idTok.getLinea());
-                    subprograma.agregarParametro(parametro);
+                    if (!subprograma.agregarParametro(parametro)) {
+                        errorSemantico("El parametro '" + idTok.getLexema() + "' ya habia sido declarado", idTok.getLinea());
+                    }
                 }
             }
         }
@@ -684,12 +720,12 @@ public class AnalizadorSintactico {
     // estructura auxiliar interna: un grupo de identificadores que
     // comparten el mismo tipo dentro de una lista de parámetros formales.
     private static class GrupoParametros {
+
         List<Token> identificadores;
         TipoDato tipo;
     }
 
     // --- utilidades de depuración -------------------------------------------
-
     // permite inspeccionar la tabla de símbolos global una vez finalizado
     // el análisis (por ejemplo, desde tests o desde main)
     public TablaSimbolos getTablaGlobal() {

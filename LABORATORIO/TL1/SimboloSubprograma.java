@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,9 +23,9 @@ public class SimboloSubprograma extends Simbolo {
         this.tablaLocal.setNombreAmbito(nombre); // así imprimirRecursivo() muestra a quién pertenece
     }
 
-    public void agregarParametro(Simbolo parametro) {
+    public boolean agregarParametro(Simbolo parametro) {
         parametros.add(parametro);
-        tablaLocal.insertar(parametro);
+        return tablaLocal.insertar(parametro);
     }
 
     public List<Simbolo> getParametros() {

@@ -1,5 +1,4 @@
 Programa sintacticamente correcto, pero con errores semanticos:
-  Error semantico en linea 9: No se le puede asignar un valor a 'algo'
   Error semantico en linea 19: El argumento 2 de 'nuevo' debe ser INTEGER y se recibio BOOLEAN
 --- Ambito 'global' (nivel 0) ---
   Simbolo{a, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=0}

@@ -215,6 +215,8 @@ public class AnalizadorLexico {
         PALABRAS_RESERVADAS.put("read", TipoToken.READ);
         PALABRAS_RESERVADAS.put("integer", TipoToken.INTEGER);
         PALABRAS_RESERVADAS.put("boolean", TipoToken.BOOLEAN);
+        PALABRAS_RESERVADAS.put("true", TipoToken.TRUE);
+        PALABRAS_RESERVADAS.put("false", TipoToken.FALSE);
         PALABRAS_RESERVADAS.put("and", TipoToken.AND);
         PALABRAS_RESERVADAS.put("or", TipoToken.OR);
         PALABRAS_RESERVADAS.put("not", TipoToken.NOT);
