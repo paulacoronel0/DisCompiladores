@@ -85,7 +85,7 @@ public class AnalizadorSintactico {
         match(TipoToken.PUNTO_Y_COMA); // espera ;
         bloque(); // procesa bloque
         match(TipoToken.PUNTO); // espera .
-        match(TipoToken.FIN_ARCHIVO); //después del END no debe haber nada
+        match(TipoToken.FIN_ARCHIVO); // después del END no debe haber nada
         if (erroresSemanticos.isEmpty()) {
             System.out.println("Programa sintactica y semanticamente correcto.");
         } else {
@@ -377,11 +377,12 @@ public class AnalizadorSintactico {
 
         if (esOperadorRelacional(preanalisis.getTipo())) {
             int lineaOperador = preanalisis.getLinea();
-            TipoToken operadorRel = preanalisis.getTipo();   // se guarda el operador relacional
+            TipoToken operadorRel = preanalisis.getTipo(); // se guarda el operador relacional
             relacion();
             TipoDato tipoDerecho = expresionSimple();
 
-            // < <= > >= solo tienen sentido entre enteros (evitamos que se use con booleans)
+            // < <= > >= solo tienen sentido entre enteros (evitamos que se use con
+            // booleans)
             boolean esDeOrden = operadorRel == TipoToken.MENOR || operadorRel == TipoToken.MENOR_IGUAL
                     || operadorRel == TipoToken.MAYOR || operadorRel == TipoToken.MAYOR_IGUAL;
             if (esDeOrden && (tipoIzquierdo == TipoDato.BOOLEAN || tipoDerecho == TipoDato.BOOLEAN)) {
@@ -556,7 +557,7 @@ public class AnalizadorSintactico {
                 numero();
                 resultado = TipoDato.INTEGER;
                 break;
-            case TRUE:   // literal booleano
+            case TRUE: // literal booleano
                 match(TipoToken.TRUE);
                 resultado = TipoDato.BOOLEAN;
                 break;
@@ -579,6 +580,18 @@ public class AnalizadorSintactico {
                 }
                 resultado = TipoDato.BOOLEAN;
                 break;
+
+            case MENOS: // menos unario: - factor
+                int lineaMenos = preanalisis.getLinea();
+                match(TipoToken.MENOS);
+                TipoDato tipoOperandoMenos = factor();
+                if (tipoOperandoMenos != null && tipoOperandoMenos != TipoDato.INTEGER) {
+                    errorSemantico("El operador unario '-' requiere un operando INTEGER y es "
+                            + tipoOperandoMenos, lineaMenos);
+                }
+                resultado = TipoDato.INTEGER;
+                break;
+
             default:
                 error("Factor invalido");
         }
@@ -672,7 +685,8 @@ public class AnalizadorSintactico {
                     Simbolo parametro = new Simbolo(idTok.getLexema(), CategoriaSimbolo.PARAMETRO,
                             grupo.tipo, idTok.getLinea());
                     if (!subprograma.agregarParametro(parametro)) {
-                        errorSemantico("El parametro '" + idTok.getLexema() + "' ya habia sido declarado", idTok.getLinea());
+                        errorSemantico("El parametro '" + idTok.getLexema() + "' ya habia sido declarado",
+                                idTok.getLinea());
                     }
                 }
             }
@@ -689,19 +703,29 @@ public class AnalizadorSintactico {
         return new ArrayList<>();
     }
 
+    // procesa la lista de parámetros formales de la DECLARACIÓN de un
+    // subprograma: "( grupo ; grupo ; ... )".
+    // La lista NO puede ser vacía: "procedure p();" es error sintáctico
+    // (en Pascal estándar se escribe "procedure p;" sin paréntesis).
+    // Si el subprograma no tiene parámetros, parametrosFormalesOpcional()
+    // ni siquiera llama a este método, porque no encuentra el "(".
     private List<GrupoParametros> parametrosFormales() {
         List<GrupoParametros> grupos = new ArrayList<>();
-        match(TipoToken.PARENTESIS_ABRE);
-        // Verificamos si la lista de parámetros NO está vacía
-        if (preanalisis.getTipo() != TipoToken.PARENTESIS_CIERRA) {
-            grupos.add(grupoDeParametros());
 
-            while (preanalisis.getTipo() == TipoToken.PUNTO_Y_COMA) {
-                match(TipoToken.PUNTO_Y_COMA);
-                grupos.add(grupoDeParametros());
-            }
+        match(TipoToken.PARENTESIS_ABRE); // consume "("
+
+        // el primer grupo es OBLIGATORIO: si después del "(" viene ")",
+        // grupoDeParametros() -> listaIdentificadores() -> match(IDENTIFICADOR)
+        // falla y se informa el error sintáctico
+        grupos.add(grupoDeParametros());
+
+        // grupos adicionales separados por ";" (ej: a, b: integer; c: boolean)
+        while (preanalisis.getTipo() == TipoToken.PUNTO_Y_COMA) {
+            match(TipoToken.PUNTO_Y_COMA); // consume ";"
+            grupos.add(grupoDeParametros());
         }
-        match(TipoToken.PARENTESIS_CIERRA);
+
+        match(TipoToken.PARENTESIS_CIERRA); // consume ")"
         return grupos;
     }
 

@@ -36,6 +36,10 @@ end;
 begin
   read(n);
   total := 0;
+
+  acumular;
+  enRango;
+
   activo := enRango(n, 10, true);
   if activo and not (n = 0) then
   begin
