@@ -73,6 +73,15 @@ public class AnalizadorSintactico {
         erroresSemanticos.add("Error semantico en linea " + linea + ": " + mensaje);
     }
 
+    /*
+     * // se lanza error semántico (corta el análisis, igual que el sintáctico)
+     * // se usa la línea del token que originó el problema, no la del preanálisis
+     * private void errorSemantico(String mensaje, int linea) {
+     * throw new RuntimeException("Error semantico en linea " + linea + ": " +
+     * mensaje);
+     * }
+     */
+
     // regla principal
     public void programa() {
         match(TipoToken.PROGRAM); // espera program
@@ -86,6 +95,13 @@ public class AnalizadorSintactico {
         bloque(); // procesa bloque
         match(TipoToken.PUNTO); // espera .
         match(TipoToken.FIN_ARCHIVO); // después del END no debe haber nada
+
+        /*
+         * match(TipoToken.FIN_ARCHIVO); // después del END no debe haber nada
+         * // si se llegó hasta acá, no hubo ni error sintáctico ni semántico
+         * System.out.println("Programa sintactica y semanticamente correcto.");
+         */
+
         if (erroresSemanticos.isEmpty()) {
             System.out.println("Programa sintactica y semanticamente correcto.");
         } else {
