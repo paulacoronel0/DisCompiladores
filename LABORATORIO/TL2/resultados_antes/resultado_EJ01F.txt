@@ -1,0 +1,14 @@
+Programa sintacticamente correcto, pero con errores semanticos:
+  Error semantico en linea 8: No se le puede asignar un valor a 'algo'
+  Error semantico en linea 12: El identificador 'a' ya habia sido declarado en este ambito
+  Error semantico en linea 20: 'algo' no es un procedimiento
+--- Ambito 'global' (nivel 0) ---
+  Simbolo{a, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=0}
+  Simbolo{b, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=1}
+  SimboloSubprograma{nuevo, PROCEDIMIENTO, parametros=1, retorno=null, linea=11}
+  Simbolo{prueba, PROGRAMA, tipo=null, linea=1, desplazamiento=-1}
+  SimboloSubprograma{algo, FUNCION, parametros=0, retorno=INTEGER, linea=5}
+--- Ambito 'nuevo' (nivel 1) ---
+  Simbolo{a, PARAMETRO, tipo=INTEGER, linea=11, desplazamiento=0}
+--- Ambito 'algo' (nivel 1) ---
+  Simbolo{b, VARIABLE, tipo=BOOLEAN, linea=6, desplazamiento=0}

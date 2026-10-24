@@ -1,0 +1,1 @@
+Error sintactico en linea 5: Se esperaba DOS_PUNTOS y se encontro PUNTO_Y_COMA

@@ -1,0 +1,9 @@
+Programa sintacticamente correcto, pero con errores semanticos:
+  Error semantico en linea 4: El identificador 'b' ya habia sido declarado en este ambito
+--- Ambito 'global' (nivel 0) ---
+  Simbolo{a, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=0}
+  Simbolo{b, VARIABLE, tipo=INTEGER, linea=3, desplazamiento=1}
+  Simbolo{prueba, PROGRAMA, tipo=null, linea=1, desplazamiento=-1}
+  SimboloSubprograma{algo, PROCEDIMIENTO, parametros=1, retorno=null, linea=5}
+--- Ambito 'algo' (nivel 1) ---
+  Simbolo{a, PARAMETRO, tipo=INTEGER, linea=5, desplazamiento=0}

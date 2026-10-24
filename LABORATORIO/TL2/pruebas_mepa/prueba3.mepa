@@ -1,0 +1,12 @@
+        INPP
+        RMEM 3
+        APVL 0, 1
+        ALVL 0, 0
+        APVL 0, 0
+        APVL 0, 1
+        SUST
+        APVL 0, 2
+        SUST
+        ALVL 0, 2
+        LMEM 3
+        PARA

@@ -1,0 +1,26 @@
+        INPP
+        RMEM 1
+        DSVS L1
+        RMEM 1
+        DSVS L2
+        RMEM 1
+        APVL 2, -3
+        APVL 1, 0
+        SUST
+        ALVL 2, 0
+        APVL 1, -3
+        APVL 2, 0
+        SUST
+        ALVL 1, 0
+        APVL 2, 0
+        ALVL 0, 0
+        LMEM 1
+L2 NADA
+        APVL 1, -3
+        ALVL 1, 0
+        LMEM 1
+L1 NADA
+        APVL 0, 0
+        ALVL 0, 0
+        LMEM 1
+        PARA

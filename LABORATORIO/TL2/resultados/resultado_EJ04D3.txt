@@ -1,0 +1,1 @@
+Error lexico en linea 26: caracter invalido 

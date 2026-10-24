@@ -1,0 +1,1 @@
+Error sintactico en linea 26: Comando invalido
