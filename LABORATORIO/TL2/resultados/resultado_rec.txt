@@ -1,0 +1,58 @@
+Programa sintactica y semanticamente correcto.
+--- Ambito 'global' (nivel 0) ---
+  Simbolo{c, VARIABLE, tipo=BOOLEAN, linea=2, desplazamiento=1}
+  Simbolo{prec, PROGRAMA, tipo=null, linea=1, desplazamiento=-1}
+  SimboloSubprograma{f, FUNCION, parametros=2, retorno=INTEGER, linea=3}
+  SimboloSubprograma{g, FUNCION, parametros=0, retorno=INTEGER, linea=12}
+  Simbolo{m, VARIABLE, tipo=INTEGER, linea=2, desplazamiento=0}
+--- Ambito 'f' (nivel 1) ---
+  Simbolo{p, VARIABLE, tipo=INTEGER, linea=4, desplazamiento=0}
+  Simbolo{b, PARAMETRO, tipo=BOOLEAN, linea=3, desplazamiento=-3}
+  Simbolo{n, PARAMETRO, tipo=INTEGER, linea=3, desplazamiento=-4}
+--- Ambito 'g' (nivel 1) ---
+--- Codigo MEPA ---
+        INPP
+        RMEM 2
+        DSVS L1
+L2 ENPR 1
+        RMEM 1
+        APVL 1, -3
+        DSVF L3
+        APVL 1, -4
+        ALVL 1, -5
+        DSVS L4
+L3 NADA
+        RMEM 1
+        APVL 1, -4
+        APVL 0, 0
+        SUST
+        APVL 1, -3
+        LLPR L2
+        RMEM 1
+        APVL 1, -4
+        UMEN
+        APVL 0, 1
+        LLPR L2
+        SUST
+        ALVL 1, 0
+        APVL 1, 0
+        ALVL 1, -5
+L4 NADA
+        LMEM 1
+        RTPR 1, 2
+L5 ENPR 1
+        APVL 0, 0
+        ALVL 1, -3
+        RTPR 1, 0
+L1 NADA
+        RMEM 1
+        APVL 0, 0
+        APVL 0, 1
+        LLPR L2
+        RMEM 1
+        LLPR L5
+        SUST
+        ALVL 0, 0
+        LMEM 2
+        PARA
+Codigo generado en: pruebas_mepa/rec.mepa

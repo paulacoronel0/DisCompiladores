@@ -58,7 +58,7 @@ public class AnalizadorSintactico {
     // genera una etiqueta unica (L1, L2, ...) para identificar una instruccion
     private String nuevaEtiqueta() {
         return "L" + (++contadorEtiquetas); // incrementa el contador y devuelve la etiqueta con el numero
-                                            // correspondiente
+        // correspondiente
     }
 
     // APVL nivel, desplazamiento (apila el valor de una variable/parámetro)
@@ -69,7 +69,7 @@ public class AnalizadorSintactico {
         // comprueba si el simbolo es una variable o un parametro
         if (cat == CategoriaSimbolo.VARIABLE || cat == CategoriaSimbolo.PARAMETRO) {
             int nivel = ambitoActual.buscarNivel(simbolo.getNombre()); // busca el nivel del ambito donde esta declarado
-                                                                       // el simbolo
+            // el simbolo
             emitir("APVL " + nivel + ", " + simbolo.getDesplazamiento()); // genera la instruccion para apilar su valor
         }
     }
@@ -84,19 +84,19 @@ public class AnalizadorSintactico {
         // comprueba si el simbolo es una variable o un parametro
         if (cat == CategoriaSimbolo.VARIABLE || cat == CategoriaSimbolo.PARAMETRO) {
             int nivel = ambitoActual.buscarNivel(simbolo.getNombre()); // busca el nivel del ambito donde esta declarado
-                                                                       // el simbolo
+            // el simbolo
             emitir("ALVL " + nivel + ", " + simbolo.getDesplazamiento()); // genera la instruccion para guardar el valor
         } else if (cat == CategoriaSimbolo.FUNCION) {
             SimboloSubprograma f = (SimboloSubprograma) simbolo; // convierte el simbolo en un subprograma para acceder
-                                                                 // a sus datos
+            // a sus datos
 
             // comprueba si se esta dentro del ambito local de la funcion
             if (ambitoActual == f.getTablaLocal()) {
                 emitir("ALVL " + f.getTablaLocal().getNivel() + ", " + f.getDesplazamientoRetorno()); // guarda el
-                                                                                                      // resultado en el
-                                                                                                      // espacio
-                                                                                                      // reservado para
-                                                                                                      // el retorno
+                // resultado en el
+                // espacio
+                // reservado para
+                // el retorno
             }
         }
     }
@@ -152,7 +152,6 @@ public class AnalizadorSintactico {
      * mensaje);
      * }
      */
-
     // regla principal
     public void programa() {
         match(TipoToken.PROGRAM); // espera program
@@ -174,7 +173,6 @@ public class AnalizadorSintactico {
          * // si se llegó hasta acá, no hubo ni error sintáctico ni semántico
          * System.out.println("Programa sintactica y semanticamente correcto.");
          */
-
         if (erroresSemanticos.isEmpty()) {
             System.out.println("Programa sintactica y semanticamente correcto.");
         } else {
@@ -336,11 +334,17 @@ public class AnalizadorSintactico {
 
     private void comandoRepetitivo() {
         match(TipoToken.WHILE);
+        String etiquetaInicio = nuevaEtiqueta();
+        String etiquetaFin = nuevaEtiqueta();
+        emitir(etiquetaInicio + " NADA");
         int linea = preanalisis.getLinea();
         TipoDato tipoCondicion = expresion();
         chequearTipoCondicion(tipoCondicion, linea);
         match(TipoToken.DO);
+        emitir("DSVF " + etiquetaFin);
         comando();
+        emitir("DSVS " + etiquetaInicio);
+        emitir(etiquetaFin + " NADA");
     }
 
     private void comandoCondicional() {
@@ -349,10 +353,18 @@ public class AnalizadorSintactico {
         TipoDato tipoCondicion = expresion();
         chequearTipoCondicion(tipoCondicion, linea);
         match(TipoToken.THEN);
+        String etiquetaElse = nuevaEtiqueta();
+        emitir("DSVF " + etiquetaElse);
         comando();
         if (preanalisis.getTipo() == TipoToken.ELSE) {
+            String etiquetaFin = nuevaEtiqueta();
+            emitir("DSVS " + etiquetaFin);
+            emitir(etiquetaElse + " NADA");
             match(TipoToken.ELSE);
             comando();
+            emitir(etiquetaFin + " NADA");
+        } else {
+            emitir(etiquetaElse + " NADA");
         }
     }
 
@@ -376,7 +388,7 @@ public class AnalizadorSintactico {
             match(TipoToken.ASIGNACION);
             TipoDato tipoExpresion = expresion(); // obtiene el tipo de dato de la expresion
             validarAsignacion(simbolo, idTok, tipoExpresion); // comprueba que la asignacion sea valida segun los tipos
-                                                              // de datos
+            // de datos
             if (simbolo != null) { // comprueba si se encontro el simbolo en la tabla de simbolos
                 emitirAlmacenar(simbolo); // genera la instruccion mepa para guardar el resultado en el simbolo
             }
@@ -441,7 +453,9 @@ public class AnalizadorSintactico {
             errorSemantico("'" + idTok.getLexema() + "' no es un procedimiento", idTok.getLinea());
             return;
         }
+        SimboloSubprograma proc = (SimboloSubprograma) simbolo;
         chequearArgumentos((SimboloSubprograma) simbolo, argumentos, idTok.getLinea());
+        emitir("LLPR " + proc.getEtiqueta()); //generamos una instrucción mepa de llamada a subprograma
     }
 
     // compara la lista de argumentos reales (tipos ya resueltos) contra los
@@ -635,6 +649,9 @@ public class AnalizadorSintactico {
 
                 // SI VIENE UN PARÉNTESIS, ES UNA LLAMADA A FUNCIÓN
                 if (preanalisis.getTipo() == TipoToken.PARENTESIS_ABRE) {
+                    if (simbolo != null && simbolo.getCategoria() == CategoriaSimbolo.FUNCION) {
+                        emitir("RMEM 1"); // lugar para el resultado, antes de los argumentos      
+                    }
                     match(TipoToken.PARENTESIS_ABRE);
 
                     List<TipoDato> argumentos = new ArrayList<>();
@@ -654,6 +671,7 @@ public class AnalizadorSintactico {
                         } else {
                             SimboloSubprograma funcion = (SimboloSubprograma) simbolo;
                             chequearArgumentos(funcion, argumentos, idTok.getLinea());
+                            emitir("LLPR " + funcion.getEtiqueta());
                             resultado = funcion.getTipoRetorno();
                         }
                     }
@@ -669,6 +687,8 @@ public class AnalizadorSintactico {
                             SimboloSubprograma funcion = (SimboloSubprograma) simbolo;
                             List<TipoDato> argumentos = new ArrayList();
                             chequearArgumentos(funcion, argumentos, idTok.getLinea());
+                            emitir("RMEM 1");  //reserva para retornar resultado                                                     
+                            emitir("LLPR " + funcion.getEtiqueta()); // a su vez, indicamos llamada a función
                             resultado = funcion.getTipoRetorno();
                         } else {
                             resultado = simbolo.getTipo();
@@ -758,6 +778,7 @@ public class AnalizadorSintactico {
 
         SimboloSubprograma simbolo = new SimboloSubprograma(nombreTok.getLexema(), CategoriaSimbolo.PROCEDIMIENTO,
                 nombreTok.getLinea(), null, ambitoActual);
+        simbolo.setEtiqueta(nuevaEtiqueta()); // seteamos la nueva etiqueta        
         registrarParametros(simbolo, gruposParametros);
 
         if (!ambitoActual.insertar(simbolo)) {
@@ -767,7 +788,10 @@ public class AnalizadorSintactico {
 
         TablaSimbolos ambitoAnterior = ambitoActual;
         ambitoActual = simbolo.getTablaLocal(); // entra al ámbito del procedimiento
+        int nivel = ambitoActual.getNivel();
+        emitir(simbolo.getEtiqueta() + " ENPR " + nivel); // acceso al procedimiento de nivel según ambito. 
         bloque();
+        emitir("RTPR " + nivel + ", " + simbolo.getParametros().size()); //retorno de procedimiento y libera el lugar de sus parámetros formales.
         ambitoActual = ambitoAnterior; // vuelve al ámbito contenedor
     }
 
@@ -784,6 +808,7 @@ public class AnalizadorSintactico {
 
         SimboloSubprograma simbolo = new SimboloSubprograma(nombreTok.getLexema(), CategoriaSimbolo.FUNCION,
                 nombreTok.getLinea(), tipoRetorno, ambitoActual);
+        simbolo.setEtiqueta(nuevaEtiqueta()); // seteamos la nueva etiqueta        
         registrarParametros(simbolo, gruposParametros);
 
         if (!ambitoActual.insertar(simbolo)) {
@@ -793,7 +818,10 @@ public class AnalizadorSintactico {
 
         TablaSimbolos ambitoAnterior = ambitoActual;
         ambitoActual = simbolo.getTablaLocal(); // entra al ámbito de la función
+        int nivel = ambitoActual.getNivel();
+        emitir(simbolo.getEtiqueta() + " ENPR " + nivel); // acceso a la función de nivel según ambito. 
         bloque();
+        emitir("RTPR " + nivel + ", " + simbolo.getParametros().size()); //retorno de función y libera el lugar de sus parámetros formales.
         ambitoActual = ambitoAnterior; // vuelve al ámbito contenedor
     }
 

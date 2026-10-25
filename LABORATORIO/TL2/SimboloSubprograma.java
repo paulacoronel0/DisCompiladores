@@ -13,6 +13,7 @@ public class SimboloSubprograma extends Simbolo {
     private List<Simbolo> parametros;
     private TipoDato tipoRetorno; // null si es PROCEDIMIENTO
     private TablaSimbolos tablaLocal;
+    private String etiqueta; // etiqueta mepa del punto de entrada (destino de LLPR para llamada de procedimientos)
 
     public SimboloSubprograma(String nombre, CategoriaSimbolo categoria, int lineaDeclaracion,
             TipoDato tipoRetorno, TablaSimbolos tablaPadre) {
@@ -41,8 +42,12 @@ public class SimboloSubprograma extends Simbolo {
         // recorre todos los parametros de la lista
         for (int i = 0; i < n; i++) {
             parametros.get(i).setDesplazamiento(-(n + 2 - i)); // asigna el desplazamiento negativo segun la posicion
-                                                               // del parametro
+            // del parametro
         }
+    }
+
+    public void setEtiqueta(String s) {
+        this.etiqueta = s;
     }
 
     // devuelve el desplazamiento de la variable implicita que almacena el resultado
@@ -61,6 +66,10 @@ public class SimboloSubprograma extends Simbolo {
 
     public TablaSimbolos getTablaLocal() {
         return tablaLocal;
+    }
+
+    public String getEtiqueta() {
+        return etiqueta;
     }
 
     @Override

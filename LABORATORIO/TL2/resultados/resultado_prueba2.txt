@@ -1,0 +1,29 @@
+Programa sintactica y semanticamente correcto.
+--- Ambito 'global' (nivel 0) ---
+  SimboloSubprograma{p, PROCEDIMIENTO, parametros=2, retorno=null, linea=3}
+  Simbolo{prueba2, PROGRAMA, tipo=null, linea=1, desplazamiento=-1}
+  Simbolo{k, VARIABLE, tipo=INTEGER, linea=2, desplazamiento=0}
+--- Ambito 'p' (nivel 1) ---
+  Simbolo{g, PARAMETRO, tipo=INTEGER, linea=3, desplazamiento=-3}
+  Simbolo{h, VARIABLE, tipo=INTEGER, linea=4, desplazamiento=0}
+  Simbolo{n, PARAMETRO, tipo=INTEGER, linea=3, desplazamiento=-4}
+--- Codigo MEPA ---
+        INPP
+        RMEM 1
+        DSVS L1
+L2 ENPR 1
+        RMEM 1
+        APVL 1, -3
+        APVL 1, -4
+        SUST
+        ALVL 1, 0
+        LMEM 1
+        RTPR 1, 2
+L1 NADA
+        APVL 0, 0
+        APVL 0, 0
+        SUST
+        ALVL 0, 0
+        LMEM 1
+        PARA
+Codigo generado en: pruebas_mepa/prueba2.mepa

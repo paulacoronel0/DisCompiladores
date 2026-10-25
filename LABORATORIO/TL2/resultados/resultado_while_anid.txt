@@ -1,0 +1,32 @@
+Programa sintactica y semanticamente correcto.
+--- Ambito 'global' (nivel 0) ---
+  Simbolo{a, VARIABLE, tipo=INTEGER, linea=2, desplazamiento=2}
+  Simbolo{c, VARIABLE, tipo=BOOLEAN, linea=2, desplazamiento=0}
+  Simbolo{d, VARIABLE, tipo=BOOLEAN, linea=2, desplazamiento=1}
+  Simbolo{pwhile, PROGRAMA, tipo=null, linea=1, desplazamiento=-1}
+--- Codigo MEPA ---
+        INPP
+        RMEM 3
+L1 NADA
+        APVL 0, 0
+        DSVF L2
+        APVL 0, 1
+        DSVF L3
+        APVL 0, 2
+        UMEN
+        ALVL 0, 2
+L3 NADA
+L4 NADA
+        APVL 0, 1
+        DSVF L5
+        APVL 0, 2
+        APVL 0, 2
+        SUST
+        ALVL 0, 2
+        DSVS L4
+L5 NADA
+        DSVS L1
+L2 NADA
+        LMEM 3
+        PARA
+Codigo generado en: pruebas_mepa/while_anid.mepa

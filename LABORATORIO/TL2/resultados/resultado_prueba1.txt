@@ -1,0 +1,15 @@
+Programa sintactica y semanticamente correcto.
+--- Ambito 'global' (nivel 0) ---
+  Simbolo{a, VARIABLE, tipo=INTEGER, linea=2, desplazamiento=0}
+  Simbolo{b, VARIABLE, tipo=INTEGER, linea=2, desplazamiento=1}
+  Simbolo{prueba, PROGRAMA, tipo=null, linea=1, desplazamiento=-1}
+--- Codigo MEPA ---
+        INPP
+        RMEM 2
+        APVL 0, 1
+        APVL 0, 0
+        SUST
+        ALVL 0, 0
+        LMEM 2
+        PARA
+Codigo generado en: pruebas_mepa/prueba1.mepa
