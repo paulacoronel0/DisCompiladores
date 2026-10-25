@@ -481,11 +481,14 @@ public class AnalizadorSintactico {
     private void comandoEscritura() {
         match(TipoToken.WRITE); // consumir write
         match(TipoToken.PARENTESIS_ABRE); // consumir (
-        expresion(); // procesar expresión (se admite INTEGER o BOOLEAN)
+        expresion(); // procesar expresión (evalúa y deja el valor en el tope de la pila)
+        
+        emitir("IMPR"); // Imprime el tope de la pila
+        
         match(TipoToken.PARENTESIS_CIERRA); // consumir )
     }
 
-    // procesar read: solo tiene sentido leer sobre variables o parámetros
+    // procesar read
     private void comandoLectura() {
         match(TipoToken.READ); // consumir read
         match(TipoToken.PARENTESIS_ABRE); // consumir (
@@ -497,6 +500,10 @@ public class AnalizadorSintactico {
                 && simbolo.getCategoria() != CategoriaSimbolo.PARAMETRO) {
             errorSemantico("Solo se puede leer sobre variables o parametros, no sobre '"
                     + idTok.getLexema() + "'", idTok.getLinea());
+        }
+        emitir("LEER"); // Lee el valor y lo apila
+        if (simbolo != null) {
+            emitirAlmacenar(simbolo); // Guarda el tope de la pila en la variable/parámetro
         }
         match(TipoToken.PARENTESIS_CIERRA); // consumir )
     }
@@ -525,6 +532,17 @@ public class AnalizadorSintactico {
                 errorSemantico("Operandos de tipos incompatibles en la comparacion ("
                         + tipoIzquierdo + " y " + tipoDerecho + ")", lineaOperador);
             }
+
+            // APLICAR INSTRUCCIÓN MEPA SEGÚN OPERADOR
+            switch (operadorRel) {
+                case IGUAL: emitir("CMIG"); break;
+                case DISTINTO: emitir("CMDI"); break;
+                case MENOR: emitir("CMME"); break;
+                case MENOR_IGUAL: emitir("CMEI"); break;
+                case MAYOR: emitir("CMMA"); break;
+                case MAYOR_IGUAL: emitir("CMAI"); break; // o CMYI dependiendo de la nomenclatura exacta de tu cátedra
+            }
+
             return TipoDato.BOOLEAN; // toda comparación da un resultado booleano
         }
 
@@ -553,8 +571,14 @@ public class AnalizadorSintactico {
             }
             TipoDato tipoDerecho = termino();
             tipoAcumulado = chequearTipoOperacion(operador, tipoAcumulado, tipoDerecho, lineaOperador);
-            if (operador == TipoToken.MENOS) {
+            
+            // EMITIR INSTRUCCIÓN MEPA
+            if (operador == TipoToken.MAS) {
+                emitir("SUMA");
+            } else if (operador == TipoToken.MENOS) {
                 emitir("SUST");
+            } else if (operador == TipoToken.OR) {
+                emitir("DISJ"); // Usá "O" si tu compilador/cátedra usa la nomenclatura corta
             }
         }
         return tipoAcumulado;
@@ -697,21 +721,25 @@ public class AnalizadorSintactico {
                     }
                 }
                 break;
-            case NUMERO: // consumir número
+            case NUMERO: // consumir n mero
+                String valorNum = preanalisis.getLexema(); // Guardar el número ANTES de consumir el token
                 numero();
+                emitir("APCT " + valorNum); // Apilar el valor numérico
                 resultado = TipoDato.INTEGER;
                 break;
             case TRUE: // literal booleano
                 match(TipoToken.TRUE);
+                emitir("APCT 1"); // MEPA representa TRUE con 1
                 resultado = TipoDato.BOOLEAN;
                 break;
             case FALSE:
                 match(TipoToken.FALSE);
+                emitir("APCT 0"); // MEPA representa FALSE con 0
                 resultado = TipoDato.BOOLEAN;
                 break;
             case PARENTESIS_ABRE: // consumir (
                 match(TipoToken.PARENTESIS_ABRE);
-                resultado = expresion(); // procesar expresión
+                resultado = expresion(); // procesar expresion interna
                 match(TipoToken.PARENTESIS_CIERRA); // consumir )
                 break;
             case NOT:
@@ -722,6 +750,7 @@ public class AnalizadorSintactico {
                     errorSemantico("El operador 'not' requiere un operando BOOLEAN y es " + tipoOperando,
                             lineaNot);
                 }
+                emitir("NO"); // Emite la negación lógica (o usá "NEGA" según tu cátedra)
                 resultado = TipoDato.BOOLEAN;
                 break;
 
