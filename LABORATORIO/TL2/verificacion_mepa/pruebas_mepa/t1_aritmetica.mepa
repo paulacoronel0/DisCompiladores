@@ -1,0 +1,27 @@
+        INPP
+        RMEM 3
+        APCT 7
+        ALVL 0, 0
+        APCT 3
+        ALVL 0, 1
+        APVL 0, 0
+        APVL 0, 1
+        APCT 2
+        MULT
+        SUMA
+        APVL 0, 0
+        APVL 0, 1
+        SUST
+        APCT 2
+        DIVI
+        SUST
+        ALVL 0, 2
+        APVL 0, 2
+        IMPR
+        APVL 0, 0
+        UMEN
+        APVL 0, 1
+        SUMA
+        IMPR
+        LMEM 3
+        PARA

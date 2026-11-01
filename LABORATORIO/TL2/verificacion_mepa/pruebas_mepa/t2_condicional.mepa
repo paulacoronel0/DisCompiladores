@@ -1,0 +1,60 @@
+        INPP
+        RMEM 3
+        APCT 5
+        ALVL 0, 0
+        APCT 8
+        ALVL 0, 1
+        APVL 0, 0
+        APVL 0, 1
+        CMME
+        APVL 0, 0
+        APVL 0, 1
+        CMIG
+        NEGA
+        CONJ
+        ALVL 0, 2
+        APVL 0, 2
+        DSVF L1
+        APCT 1
+        IMPR
+        DSVS L2
+L1 NADA
+        APCT 0
+        IMPR
+L2 NADA
+        APCT 0
+        APVL 0, 0
+        APVL 0, 1
+        CMMA
+        DISJ
+        ALVL 0, 2
+        APVL 0, 2
+        DSVF L3
+        APCT 1
+        IMPR
+        DSVS L4
+L3 NADA
+        APCT 0
+        IMPR
+L4 NADA
+        APVL 0, 0
+        APVL 0, 1
+        CMDG
+        APVL 0, 0
+        APVL 0, 1
+        CMNI
+        CONJ
+        APVL 0, 1
+        APVL 0, 0
+        CMYI
+        CONJ
+        DSVF L5
+        APCT 100
+        IMPR
+        DSVS L6
+L5 NADA
+        APCT 200
+        IMPR
+L6 NADA
+        LMEM 3
+        PARA

@@ -1,0 +1,17 @@
+        INPP
+        RMEM 1
+        DSVS L1
+L2 ENPR 1
+        APVL 1, -4
+        APVL 1, -3
+        SUMA
+        ALVL 0, 0
+        RTPR 1, 2
+L1 NADA
+        APCT 4
+        APCT 9
+        LLPR L2
+        APVL 0, 0
+        IMPR
+        LMEM 1
+        PARA

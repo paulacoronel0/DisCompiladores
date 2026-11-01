@@ -455,7 +455,7 @@ public class AnalizadorSintactico {
         }
         SimboloSubprograma proc = (SimboloSubprograma) simbolo;
         chequearArgumentos((SimboloSubprograma) simbolo, argumentos, idTok.getLinea());
-        emitir("LLPR " + proc.getEtiqueta()); //generamos una instrucción mepa de llamada a subprograma
+        emitir("LLPR " + proc.getEtiqueta()); // generamos una instrucción mepa de llamada a subprograma
     }
 
     // compara la lista de argumentos reales (tipos ya resueltos) contra los
@@ -482,9 +482,14 @@ public class AnalizadorSintactico {
         match(TipoToken.WRITE); // consumir write
         match(TipoToken.PARENTESIS_ABRE); // consumir (
         expresion(); // procesar expresión (evalúa y deja el valor en el tope de la pila)
-        
-        emitir("IMPR"); // Imprime el tope de la pila
-        
+        emitir("IMPR");
+        // write(E1, E2, ..., En): una expresión + IMPR por cada argumento
+        while (preanalisis.getTipo() == TipoToken.COMA) {
+            match(TipoToken.COMA);
+            expresion();
+            emitir("IMPR");
+        }
+
         match(TipoToken.PARENTESIS_CIERRA); // consumir )
     }
 
@@ -535,12 +540,24 @@ public class AnalizadorSintactico {
 
             // APLICAR INSTRUCCIÓN MEPA SEGÚN OPERADOR
             switch (operadorRel) {
-                case IGUAL: emitir("CMIG"); break;
-                case DISTINTO: emitir("CMDI"); break;
-                case MENOR: emitir("CMME"); break;
-                case MENOR_IGUAL: emitir("CMEI"); break;
-                case MAYOR: emitir("CMMA"); break;
-                case MAYOR_IGUAL: emitir("CMAI"); break; // o CMYI dependiendo de la nomenclatura exacta de tu cátedra
+                case IGUAL:
+                    emitir("CMIG");
+                    break;
+                case DISTINTO:
+                    emitir("CMDG");
+                    break; // antes CMDI
+                case MENOR:
+                    emitir("CMME");
+                    break;
+                case MENOR_IGUAL:
+                    emitir("CMNI");
+                    break; // antes CMEI
+                case MAYOR:
+                    emitir("CMMA");
+                    break;
+                case MAYOR_IGUAL:
+                    emitir("CMYI");
+                    break; // antes CMAI
             }
 
             return TipoDato.BOOLEAN; // toda comparación da un resultado booleano
@@ -571,7 +588,7 @@ public class AnalizadorSintactico {
             }
             TipoDato tipoDerecho = termino();
             tipoAcumulado = chequearTipoOperacion(operador, tipoAcumulado, tipoDerecho, lineaOperador);
-            
+
             // EMITIR INSTRUCCIÓN MEPA
             if (operador == TipoToken.MAS) {
                 emitir("SUMA");
@@ -580,6 +597,7 @@ public class AnalizadorSintactico {
             } else if (operador == TipoToken.OR) {
                 emitir("DISJ"); // Usá "O" si tu compilador/cátedra usa la nomenclatura corta
             }
+
         }
         return tipoAcumulado;
     }
@@ -634,6 +652,15 @@ public class AnalizadorSintactico {
             }
             TipoDato tipoDerecho = factor();
             tipoAcumulado = chequearTipoOperacion(operador, tipoAcumulado, tipoDerecho, lineaOperador);
+            // emitir la instrucción MEPA (después de evaluar el operando derecho)
+            if (operador == TipoToken.MULTIPLICACION) {
+                emitir("MULT");
+            } else if (operador == TipoToken.DIV) {
+                emitir("DIVI");
+            } else {
+                emitir("CONJ");
+            }
+
         }
         return tipoAcumulado;
     }
@@ -674,7 +701,7 @@ public class AnalizadorSintactico {
                 // SI VIENE UN PARÉNTESIS, ES UNA LLAMADA A FUNCIÓN
                 if (preanalisis.getTipo() == TipoToken.PARENTESIS_ABRE) {
                     if (simbolo != null && simbolo.getCategoria() == CategoriaSimbolo.FUNCION) {
-                        emitir("RMEM 1"); // lugar para el resultado, antes de los argumentos      
+                        emitir("RMEM 1"); // lugar para el resultado, antes de los argumentos
                     }
                     match(TipoToken.PARENTESIS_ABRE);
 
@@ -711,7 +738,7 @@ public class AnalizadorSintactico {
                             SimboloSubprograma funcion = (SimboloSubprograma) simbolo;
                             List<TipoDato> argumentos = new ArrayList();
                             chequearArgumentos(funcion, argumentos, idTok.getLinea());
-                            emitir("RMEM 1");  //reserva para retornar resultado                                                     
+                            emitir("RMEM 1"); // reserva para retornar resultado
                             emitir("LLPR " + funcion.getEtiqueta()); // a su vez, indicamos llamada a función
                             resultado = funcion.getTipoRetorno();
                         } else {
@@ -750,7 +777,7 @@ public class AnalizadorSintactico {
                     errorSemantico("El operador 'not' requiere un operando BOOLEAN y es " + tipoOperando,
                             lineaNot);
                 }
-                emitir("NO"); // Emite la negación lógica (o usá "NEGA" según tu cátedra)
+                emitir("NEGA");
                 resultado = TipoDato.BOOLEAN;
                 break;
 
@@ -807,7 +834,7 @@ public class AnalizadorSintactico {
 
         SimboloSubprograma simbolo = new SimboloSubprograma(nombreTok.getLexema(), CategoriaSimbolo.PROCEDIMIENTO,
                 nombreTok.getLinea(), null, ambitoActual);
-        simbolo.setEtiqueta(nuevaEtiqueta()); // seteamos la nueva etiqueta        
+        simbolo.setEtiqueta(nuevaEtiqueta()); // seteamos la nueva etiqueta
         registrarParametros(simbolo, gruposParametros);
 
         if (!ambitoActual.insertar(simbolo)) {
@@ -818,9 +845,10 @@ public class AnalizadorSintactico {
         TablaSimbolos ambitoAnterior = ambitoActual;
         ambitoActual = simbolo.getTablaLocal(); // entra al ámbito del procedimiento
         int nivel = ambitoActual.getNivel();
-        emitir(simbolo.getEtiqueta() + " ENPR " + nivel); // acceso al procedimiento de nivel según ambito. 
+        emitir(simbolo.getEtiqueta() + " ENPR " + nivel); // acceso al procedimiento de nivel según ambito.
         bloque();
-        emitir("RTPR " + nivel + ", " + simbolo.getParametros().size()); //retorno de procedimiento y libera el lugar de sus parámetros formales.
+        emitir("RTPR " + nivel + ", " + simbolo.getParametros().size()); // retorno de procedimiento y libera el lugar
+                                                                         // de sus parámetros formales.
         ambitoActual = ambitoAnterior; // vuelve al ámbito contenedor
     }
 
@@ -837,7 +865,7 @@ public class AnalizadorSintactico {
 
         SimboloSubprograma simbolo = new SimboloSubprograma(nombreTok.getLexema(), CategoriaSimbolo.FUNCION,
                 nombreTok.getLinea(), tipoRetorno, ambitoActual);
-        simbolo.setEtiqueta(nuevaEtiqueta()); // seteamos la nueva etiqueta        
+        simbolo.setEtiqueta(nuevaEtiqueta()); // seteamos la nueva etiqueta
         registrarParametros(simbolo, gruposParametros);
 
         if (!ambitoActual.insertar(simbolo)) {
@@ -848,9 +876,10 @@ public class AnalizadorSintactico {
         TablaSimbolos ambitoAnterior = ambitoActual;
         ambitoActual = simbolo.getTablaLocal(); // entra al ámbito de la función
         int nivel = ambitoActual.getNivel();
-        emitir(simbolo.getEtiqueta() + " ENPR " + nivel); // acceso a la función de nivel según ambito. 
+        emitir(simbolo.getEtiqueta() + " ENPR " + nivel); // acceso a la función de nivel según ambito.
         bloque();
-        emitir("RTPR " + nivel + ", " + simbolo.getParametros().size()); //retorno de función y libera el lugar de sus parámetros formales.
+        emitir("RTPR " + nivel + ", " + simbolo.getParametros().size()); // retorno de función y libera el lugar de sus
+                                                                         // parámetros formales.
         ambitoActual = ambitoAnterior; // vuelve al ámbito contenedor
     }
 
