@@ -68,6 +68,7 @@ for pas in "${ARCHIVOS[@]}"; do
 
     # 3) ejecutar el codigo mepa con el interprete
     real=$(java -cp "$PWD" MepaInterprete "$mepa" < "$entrada" 2>&1 | tr -d '\r')
+    
     esperado_salida=$(tr -d '\r' < "$salida_esperada")
 
     # 4) comparar resultados
